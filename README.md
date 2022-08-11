@@ -2,6 +2,4 @@
 ## FOSAD 22 ##
 
 
-Slides and code
-
-
+*Slides and code*
