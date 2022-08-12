@@ -19,7 +19,9 @@ to be stored.
 ```
 Note that a multisignature address has no secret key.
 
-2. [multiPayTXComplete.py](./multiPayTXComplete.py) creates, signs and submits a transaction from a multi signature address. The intermediate transactions are stored for inspection in folder TX.
+2. [multiPayTXComplete.py](./multiPayTXComplete.py) 
+creates, signs and submits a transaction from a multi signature address. The intermediate transactions are stored for inspection in folder TX.
+
 3. the whole process is executed by [example02.sh](./example02.sh)
 
 ### Step by step ### 
