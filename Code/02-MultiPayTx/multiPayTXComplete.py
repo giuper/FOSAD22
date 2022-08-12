@@ -24,7 +24,6 @@ def multiPayTX(mnems,mSig,rAddr,amount,algodClient):
     mTx=MultisigTransaction(unsignedTx,mSig)
     write_to_file([mTx],"TX/MultiPayWithPK.utx")
 
-    
     # sign transaction
     for i in range(mSig.threshold):
         sk=mnemonic.to_private_key(mnems[i])
@@ -58,8 +57,8 @@ def main():
     threshold=2
     
     accounts=[]
-    for i in range(1,4):
-        with open(sys.argv[i],'r') as f:
+    for filename in sys.argv[1:4]:
+        with open(filename,'r') as f:
             acc=f.read()
         accounts.append(acc)
     mSig=Multisig(version,threshold,accounts)
