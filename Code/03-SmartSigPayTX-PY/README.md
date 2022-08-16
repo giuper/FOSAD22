@@ -35,5 +35,6 @@ outputs *1* if and only if
     ==                    //pop two element of the stack and push 1 iff they are equal
 ```
 
-The last line of the TEAL program consists of ```&&``` that pops two elements from the stack and pushes *1* if and only if they are both *1*
+The last line of the TEAL program consists of instructions ```&&``` that pops two elements from the stack 
+(the output of the first two equality checks) and pushes *1* if and only if they are both *1*
 
