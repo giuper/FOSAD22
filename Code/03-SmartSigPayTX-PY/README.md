@@ -19,7 +19,8 @@ We next discuss two simple logical signatures.
 
 [fourtytwo.teal](./fourtytwo.teal) is a simple TEAL program that
 outputs *1* if and only if 
-    1. the first argument is 42 
+
+1. the first argument is 42 
 
 ```
     byte "42"   //push string "42" onto the stack
@@ -27,13 +28,12 @@ outputs *1* if and only if
     ==          //pop two elements from the stack and push 1 iff they are equal
 ```
 
-    2. the closer and the receiver of the transaction are the same 
+2. the closer and the receiver of the transaction are the same 
 ```
     txn CloseRemainderTo  //push the address of the closer onto the stack
     txn Receiver          //push the address of the receiver onto the stack
     ==                    //pop two element of the stack and push 1 iff they are equal
 ```
 
-    3. the last line of the TEAL program consists of ```&&``` that pops two elements from the
-    stack and pushes *1* if and only if they are both *1*
+The last line of the TEAL program consists of ```&&``` that pops two elements from the stack and pushes *1* if and only if they are both *1*
 
