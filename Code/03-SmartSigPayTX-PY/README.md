@@ -15,9 +15,9 @@ Each TEAL program has an address that is the hash of its bytecode.
 We next discuss two simple logical signatures.
 
 
-### FOURTYTWO ###
+### FORTYTWO ###
 
-[fourtytwo.teal](./fourtytwo.teal) is a simple TEAL program that
+[fortytwo.teal](./fortytwo.teal) is a simple TEAL program that
 outputs *1* if and only if the following two conditions are met.
 For each condition we describe the TEAL fragment that verifies the
 condition.
@@ -42,51 +42,6 @@ The last line of the TEAL program consists of instructions ```&&``` that pops tw
 
 Script [00compile.sh](00compile.sh) computes the address of TEAL program  ```fortytwo.teal```.
 
-Python program [42SmartSig.py](./42SmartSig.py) prepares and submits a transaction
-logically signed by providing an argument that satisfies TEAL program  ```fortytwo.teal```.
-The sender of the transaction will be the address of the TEAL program and the receiver is specified
-on the command line.
-
-To create the transaction we need to compute the address of the sender that is obtained
-by compiling the TEAL program
-
-```python
-    # Read TEAL program
-    with open(TEALprogram, 'r') as f:
-        data=f.read()
-    
-    # Compile TEAL program
-    response=algodClient.compile(data)
-    sender=response['hash']
-```
-
-The transaction is then constructed as any other transaction by calling
-
-```python
-    txn = transaction.PaymentTxn(sender,params,receiver,amount,closeremainderto)
-```
-
-The logic signature of the transaction is then computed as follows
-
-```python
-
-    programstr=response['result']
-    t=programstr.encode()
-    program=base64.decodebytes(t)
-
-    # Adding arguments
-    arg_str="42"
-    arg1=arg_str.encode()
-    
-    #The logic signature is program + arguments
-    lsig=transaction.LogicSig(program, args=[arg1])
-    #The signed transaction is txn + logic signature
-    lstx=transaction.LogicSigTransaction(txn,lsig)
-
-
-```
-
-
 ### Passphrase ###
 
 [passphrase.teal](./passphrase.teal) is a simple TEAL program that terminates with success 
@@ -95,7 +50,7 @@ if and only the following conditions are
 1. The transaction fee is reasonabe
 
 ```
-    // Check the Fee is resonable
+    // Check the Fee is reasonable
     // In this case 10,000 microalgos
     txn Fee      //push the transaction fee onto the stack
     int 10000    //push integer 10_000 onto the stack
@@ -140,3 +95,58 @@ if and only the following conditions are
     ==      //pop two elements from the stack and push 1 iff they are equal
     &&
 ```
+
+The passphrase is
+
+```
+    weather comfort erupt verb pet range endorse exhibit tree brush crane man
+```
+
+### Constructing and Signing with a Smart Signature ###
+
+Python program [SmartSig.py](./SmartSig.py) prepares and submits a transaction
+logically signed by a specified TEAL program.
+The sender of the transaction will be the address of the TEAL program and the receiver is specified on the command line.
+It is assumed that the TEAL program takes one single input that i s
+passed to ```SmartSig.py``` as a command line argument.
+
+To create the transaction we need to compute the address of the sender that is obtained
+by compiling the TEAL program
+
+```python
+    # Read TEAL program
+    with open(TEALprogram, 'r') as f:
+        data=f.read()
+    
+    # Compile TEAL program
+    response=algodClient.compile(data)
+    sender=response['hash']           #the address of the TEAL program
+```
+
+The transaction is then constructed as any other transaction by calling
+
+```python
+    txn = transaction.PaymentTxn(sender,params,receiver,amount,closeremainderto)
+```
+
+The logic signature of the transaction is then computed as follows
+
+```python
+
+    programstr=response['result']   #the bytecode
+    t=programstr.encode()
+    program=base64.decodebytes(t)
+
+    # Adding arguments
+    arg_str=sys.argv[3]
+    arg1=arg_str.encode()
+    
+    #The logic signature is program + arguments
+    lsig=transaction.LogicSig(program, args=[arg1])
+    #The signed transaction is txn + logic signature
+    lstx=transaction.LogicSigTransaction(txn,lsig)
+
+
+```
+
+

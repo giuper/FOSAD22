@@ -1,5 +1,5 @@
 // Valid passphrase input: "weather comfort erupt verb pet range endorse exhibit tree brush crane man"
-// Check the Fee is resonable
+// Check the Fee is reasonable
 // In this case 10,000 microalgos
 txn Fee
 int 10000

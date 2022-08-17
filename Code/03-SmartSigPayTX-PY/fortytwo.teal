@@ -1,0 +1,7 @@
+byte "42"
+arg 0
+==
+txn CloseRemainderTo
+txn Receiver
+==
+&&
