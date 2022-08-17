@@ -18,7 +18,9 @@ We next discuss two simple logical signatures.
 ### FOURTYTWO ###
 
 [fourtytwo.teal](./fourtytwo.teal) is a simple TEAL program that
-outputs *1* if and only if 
+outputs *1* if and only if the following two conditions are met.
+For each condition we describe the TEAL fragment that verifies the
+condition.
 
 1. the first argument is 42 
 
@@ -90,3 +92,51 @@ The logic signature of the transaction is then computed as follows
 [passphrase.teal](./passphrase.teal) is a simple TEAL program that terminates with success 
 if and only the following conditions are 
 
+1. The transaction fee is reasonabe
+
+```
+    // Check the Fee is resonable
+    // In this case 10,000 microalgos
+    txn Fee      //push the transaction fee onto the stack
+    int 10000    //push integer 10_000 onto the stack
+    <=           //pop two elements from the stack
+                 //and push one iff the deeper of the two is smaller than
+                 //the other
+```
+
+2. The passphrase provided as input is of the right length (73)
+
+```
+    // Check the length of the passphrase is correct
+    arg 0   //push the first argument onto the the stack
+    len     //pop one element from the stack and push back its length
+    int 73  //push the integer 73 onto the stack
+    ==      //pop two elements from the stack and replace with 1 
+            //iff and only they are equal
+    &&      //pop two elements from the stack 
+            //(at this point the results of the first two checks)
+            //and push the AND of the two elements
+```
+
+4.  The SHA256 value of the passphrase is the correct one
+
+```
+    arg 0    //push the first argument onto the the stack
+    sha256   //replace the top of the stack with its SHA256 value
+    byte base64 30AT2gOReDBdJmLBO/DgvjC6hIXgACecTpFDcP1bJHU=
+            //push the byte string whose base64 encoding is provided
+    ==      //pop two elements from the stack and push 1 iff they are equal
+            //(at this point the hash of the first argument and the hash provided)
+    &&     //pop two elements from the stack 
+           //(at this point the result of the first two checks and of the third one)
+           //and push the AND of the two elements
+```
+
+5. Check the CloseRemainderTo is equal to the receiver
+
+```
+    txn CloseRemainderTo  //push the closer of the transaction onto the stack
+    txn Receiver //push the receiver of the transaction onto the stack
+    ==      //pop two elements from the stack and push 1 iff they are equal
+    &&
+```
