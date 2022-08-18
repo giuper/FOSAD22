@@ -6,7 +6,6 @@
 2. [Multi signatures](./02-MultiPayTx)
 3. [Logic signatures](./03-SmartSigPayTX)
 
-
 ### Layer One Assets
 
 4. [Algorand Standard Assets](./04-Assets)
