@@ -4,7 +4,8 @@
 ### Three ways to sign a payment transaction ###
 1. [Single signatures](./01-SinglePayTx) 
 2. [Multi signatures](./02-MultiPayTx)
-3. [Logic signatures](./03-SmartSigPayTx)
+3. [Logic signatures](./03-SmartSigPayTX)
+
 
 ### Layer One Assets
 
