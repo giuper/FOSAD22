@@ -11,3 +11,5 @@
 4. [Algorand Standard Assets](./04-Assets)
 5. [Atomic Groups](./05-AtomicGroup)
 
+### Distributed Applications ###
+6. [Warm-Up](./06-SmartContractsW): approval program in TEAL

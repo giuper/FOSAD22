@@ -1,7 +1,7 @@
 # *Introduction to blockchain and smart contract design*
 ## FOSAD 22 ##
 
-## Distributed Applications ##
+## Distributed Applications (aka dApps) ##
 
 Smart contracts (or *distributed applications* or *dApps*), 
 unlike smart signatures, have a state that consists of
@@ -15,7 +15,9 @@ Specifically, the dApp maintains one global counter
 and one local counter 
 ```lcnt``` that is incremented by 7 at each invocation per address.
 
-The distributed application is deployed on the blockchain with a special 
+### Creating a dApp ###
+
+The distributed application is created on the blockchain with a special 
 application creation transaction
 
 ```python
@@ -24,7 +26,68 @@ application creation transaction
                                         globalSchema,localSchema)
 ```
 The transactions specifies the address of the creator,
-two programs, the ```approvalProgram``` and the ```clearProgram```
+two programs, the ```approvalProgram``` and the ```clearProgram```, 
+and the global and local schema.
+
+The ```clearProgram``` is executed when the an address wants to remove
+the dApp from its balance account.
+In our case the clear program just terminates
+with success by pushing *1* onto the stack.
+
+```python
+    clearProgramSource=b"""#pragma version 4 int 1 """
+    clearProgramResponse=algodClient.compile(clearProgramSource.decode('utf-8'))
+    clearProgram=base64.b64decode(clearProgramResponse['result'])
+```
+
+The ```approvalProgram``` instead specifies how the application behaves
+in the following cases:
+
+1. ```NoOp``` generic execution call of the dApp.
+2. ```OptIn``` an address decides to participate to the dApp and its local
+storage is enabled.
+3. ```DeleteApplication``` when the dApp is removed
+4. ```UpdateApplication``` when the dApp TEAL program is updated
+5. ```CloseOut``` close the address participation in the dApp without
+ removing it from the address balance.
+
+Typically the ```approvalProgram``` is read from a file before being compiled as in the following fragment
+
+```python
+    with open(approvalFile,'r') as f:
+        approvalProgramSource=f.read()
+    approvalProgramResponse=algodClient.compile(approvalProgramSource)
+    approvalProgram=base64.b64decode(approvalProgramResponse['result'])
+```
+
+The ```globalScheme``` specifies the number of the integer and string gloabl
+variables. In our case we have the following
+
+```python
+    global_ints=2
+    global_bytes=1
+    globalSchema=StateSchema(global_ints,global_bytes)
+```
+and similarly for local variables
+
+```python
+    local_ints=2
+    local_bytes=1
+    localSchema=StateSchema(local_ints,local_bytes)
+```
+
+Python program [createApp.py](createApp.py) creates a dApp. 
+It takes three command line arguments: 
+the filename containing the mnemonic of the creator account,
+the filename containing the TEAL of the approval program,
+and the directory of the node.
+Take note of the application index that will be needed for the following steps.
+
+Note that you must use the creator address in the approval program. 
+
+[Here](./TX/create.stxn) is the signed transaction that creates an application.
+Use command ```goal clerk inspect create.stxn``` to view its content.
+
 
 ### Step by step (no arguments) ###
 
@@ -80,15 +143,7 @@ return
 ```
 
 
-2. Run [createApp.py](createApp.py) to create the application.
-    It takes three command line arguments: the filename containing the mnemonic of the creator account,
-        the filename containing the teal program, and the directory of the node.
-    Take note of the application index that will be needed for the following steps.
 
-    Note that you must use the creator address in the approval program. 
-
-    [Here](./TX/create.stxn) is the signed transaction that creates an application.
-    Use command ```goal clerk inspect create.stxn``` to view its content.
 
 2. Run [optinApp.py](optinApp.py) to allow addresses to opt in the application.
     It takes three command line arguments: the filename containing the mnemonic of the address

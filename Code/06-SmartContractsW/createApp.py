@@ -23,13 +23,14 @@ def main(creatorMnemFile,approvalFile,directory):
     on_complete=OnComplete.NoOpOC.real
 
     # declare application state storage (immutable)
-    local_ints=3
-    local_bytes=1
+    # define global schema
     global_ints=2
     global_bytes=1
-
-    # define schema
     globalSchema=StateSchema(global_ints,global_bytes)
+
+    # define local schema
+    local_ints=3
+    local_bytes=1
     localSchema=StateSchema(local_ints,local_bytes)
 
     clearProgramSource=b"""#pragma version 4 int 1 """
