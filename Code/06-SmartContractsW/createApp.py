@@ -45,11 +45,11 @@ def main(creatorMnemFile,approvalFile,directory):
     utxn=ApplicationCreateTxn(creatorAddr,params,on_complete, \
                                         approvalProgram,clearProgram, \
                                         globalSchema,localSchema)
-    
     write_to_file([utxn],"create.utxn")
 
     stxn=utxn.sign(creatorSK)
     write_to_file([stxn],"create.stxn")
+
     txId=stxn.transaction.get_txid()
     print("Transaction id:  ",txId)
     algodClient.send_transactions([stxn])

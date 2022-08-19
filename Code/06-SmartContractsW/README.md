@@ -88,12 +88,65 @@ Note that you must use the creator address in the approval program.
 [Here](./TX/create.stxn) is the signed transaction that creates an application.
 Use command ```goal clerk inspect create.stxn``` to view its content.
 
+### Opting in a dApp ###
+Any address must opt in a dApp before being able to call the dApp.
+The opt-in transaction is constructed as follows
 
-### Step by step (no arguments) ###
+```python
+    utxn=ApplicationOptInTxn(Addr,params,index)
+```
+where ```Addr``` is the address opting in, ```params``` are the transaction parameters
+and ```index``` is the id of the dApp.
 
-1. Create the approval file [01-class.teal](01-class.teal)
+Python program [optinApp.py](optinApp.py) takes three command line arguments: 
+the filename containing the mnemonic of the address that wishes to opt in, 
+the application index, and the directory of the node.
 
-The actual execution is performed by the code starting with label ```handle_noop``
+[Here](./TX/optin.stxn) is the signed transaction to opt in an application.
+Use command ```goal clerk inspect optin.stxn``` to view its content.
+
+### Calling a dApp ###
+The transaction to call an application is constructed as follows
+
+```python
+    utxn=ApplicationNoOpTxn(Addr,params,index)
+```
+where ```Addr``` is the address calling the app, 
+```params``` are the transaction parameters
+and ```index``` is the id of the dApp.
+
+Python program [callApp.py](callApp.py) call a dApp and 
+it takes three command line arguments: 
+the filename containing the mnemonic of the address that wishes to call
+the application, the application index, and the directory of the node.
+    
+[Here](./TX/noop.stxn) is the signed transaction to invoke an application.
+Use command ```goal clerk inspect noop.stxn``` to view its content.
+
+The output shows the current values of the global and local variables and
+can be obtained from the ```response``` returned by the transaction once it 
+has completed 
+(in the fields ```global-state-delta``` and ```local-state-delta```, respectively).
+Note that only variables whose values have changed are reported 
+(whence the ```delta```).
+
+Alternatively, the local state can be obtained from the field ```apps-local-state``` 
+of the ```account_info``` obtained from the node about the address that has called the application.
+
+The global state can also be obtained from the script ```readGlobalValues.py``` that accesses 
+    the ```account_info``` of the creator of the application.
+
+
+### The TEAL approval file ###
+
+The [approval file](01-class.teal) handles the 5 possible operations.
+The operation to be performed can be read by the TEAL program 
+by executing ```txn OnCompletion``` and checking the
+value obtained with the codes associated to the operations.
+
+The generic execution call identified with code ```NoOp```
+is performed by the code starting with label ```handle_noop```
+
 
 ```
 handle_noop:
@@ -143,32 +196,9 @@ return
 ```
 
 
-
-
-2. Run [optinApp.py](optinApp.py) to allow addresses to opt in the application.
-    It takes three command line arguments: the filename containing the mnemonic of the address
-    that wishes to opt in, the application index, and the directory of the node.
-
-    [Here](./TX/optin.stxn) is the signed transaction to opt in an application.
-    Use command ```goal clerk inspect optin.stxn``` to view its content.
+For all other operations, the TEAL program just approves the operation without
+performing any action.
     
-3. Run [callApp.py](callApp.py) to allow addresses to execute the application.
-    It takes three command line arguments: the filename containing the mnemonic of the address
-    that wishes to opt in, the application index, and the directory of the node.
-    
-    [Here](./TX/noop.stxn) is the signed transaction to invoke an application.
-    Use command ```goal clerk inspect noop.stxn``` to view its content.
-
-    The output shows the current values of the counters.
-    The global and local counter can be obtained from the ```response``` returned by the transaction once it 
-    has completed (in the fields ```global-state-delta``` and ```local-state-delta```, respectively).
-    Note that only variables whose values have changed are reported (whence the ```delta```).
-
-    Alternatively, the local state can be obtained from the field ```apps-local-state``` of the 
-    ```account_info``` obtained from the node about the address that has called the application.
-
-    The global state can also be obtained from the script ```readGlobalValues.py``` that accesses 
-    the ```account_info``` of the creator of the application.
 
 ### Step by step (with arguments) ###
 

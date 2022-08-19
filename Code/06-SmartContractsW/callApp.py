@@ -5,20 +5,20 @@ from algosdk.v2client import algod
 from algosdk.future.transaction import write_to_file, ApplicationNoOpTxn
 from utilities import wait_for_confirmation, getClient
 
-def main(MnemFIle,index,directory)
+def main(MnemFile,index,directory)
 
     algodClient=getClient(directory)
     params=algodClient.suggested_params()
 
-    f=open(MnemFile,'r')
-    Mnem=f.read()
+    with open(MnemFile,'r') as f:
+        Mnem=f.read()
     SK=mnemonic.to_private_key(Mnem)
     Addr=account.address_from_private_key(SK)
-    f.close()
 
 
     utxn=ApplicationNoOpTxn(Addr,params,index)
     write_to_file([utxn],"noop.utxn")
+
     stxn=utxn.sign(SK)
     write_to_file([stxn],"noop.stxn")
     txId=stxn.transaction.get_txid()

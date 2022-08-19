@@ -11,18 +11,20 @@ def main(MnemFile,index,directory):
     algodClient=getClient(directory)
     params=algodClient.suggested_params()
 
-    f=open(MnemFile,'r')
-    Mnem=f.read()
+    with open(MnemFile,'r') as f:
+        Mnem=f.read()
     SK=mnemonic.to_private_key(Mnem)
     Addr=account.address_from_private_key(SK)
-    f.close()
 
     utxn=ApplicationOptInTxn(Addr,params,index)
     write_to_file([utxn],"optin.utxn")
+
     stxn=utxn.sign(SK)
     write_to_file([stxn],"optin.stxn")
+
     txId=stxn.transaction.get_txid()
     print("Transaction id:  ",txId)
+
     algodClient.send_transactions([stxn])
     wait_for_confirmation(algodClient,txId,4)
     txResponse=algodClient.pending_transaction_info(txId)

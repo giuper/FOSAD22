@@ -8,40 +8,28 @@ from algosdk.future.transaction import write_to_file
 from algosdk.future.transaction import ApplicationNoOpTxn
 from algosdk.future.transaction import OnComplete
 from algosdk.future.transaction import StateSchema
-from utilities import wait_for_confirmation
+from utilities import wait_for_confirmation, getClient
 
-def main():
-    if len(sys.argv)!=4:
-        print("usage: python3 "+sys.argv[0]+" <mnem> <app index> <node directory>")
-        exit()
+def main(MnemFile,index,directory):
 
-    MnemFile=sys.argv[1]
-    index=int(sys.argv[2])
-    directory=sys.argv[3]
 
-    f=open(directory+"/algod.token",'r')
-    algodToken=f.read()
-    f.close()
-    f=open(directory+"/algod.net",'r')
-    algodAddress="http://"+f.read()[:-1]   #to remove the trailing newline
-    f.close()
-    algodClient = algod.AlgodClient(algodToken,algodAddress)
+    algodClient=getClient(directory)
+    params=algodClient.suggested_params()
 
-    f=open(MnemFile,'r')
-    Mnem=f.read()
+    with open(MnemFile,'r') as f:
+        Mnem=f.read()
     SK=mnemonic.to_private_key(Mnem)
     Addr=account.address_from_private_key(SK)
-    f.close()
-    params=algodClient.suggested_params()
+
 
     incr=1000
     appArgs=[incr.to_bytes(8,'big')]
-    ##now="97"
-    ##appArgs = [now.encode("utf-8")]
     utxn=ApplicationNoOpTxn(Addr,params,index,appArgs)
     write_to_file([utxn],"noop.utxn")
+
     stxn=utxn.sign(SK)
     write_to_file([stxn],"noop.stxn")
+
     txId=stxn.transaction.get_txid()
     print("Transaction id: ",txId)
     algodClient.send_transactions([stxn])
@@ -110,6 +98,12 @@ def main():
 
 
 if __name__=='__main__':
-    main()
+    if len(sys.argv)!=4:
+        print("usage: python3 "+sys.argv[0]+" <mnem> <app index> <node directory>")
+        exit()
+    MnemFile=sys.argv[1]
+    index=int(sys.argv[2])
+    directory=sys.argv[3]
+    main(MnemFile,index,directory)
     
     
