@@ -12,4 +12,5 @@
 5. [Atomic Groups](./05-AtomicGroup)
 
 ### Distributed Applications ###
-6. [Warm-Up](./06-SmartContractsW): approval program in TEAL
+6. [Warm-Up](./06-dAppTEAL): approval program in TEAL
+7. [Warm-Up](./07-dAppPyTEAL): approval program in PyTEAL
