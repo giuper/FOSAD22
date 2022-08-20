@@ -1,0 +1,95 @@
+#pragma version 4
+// Handle each possible OnCompletion type. We don't have to worry about
+// handling ClearState, because the ClearStateProgram will execute in that
+// case, not the ApprovalProgram.
+
+txn OnCompletion
+int NoOp
+==
+bnz handle_noop
+
+txn OnCompletion
+int OptIn
+==
+bnz handle_optin
+
+txn OnCompletion
+int CloseOut
+==
+bnz handle_closeout
+
+txn OnCompletion
+int UpdateApplication
+==
+bnz handle_updateapp
+
+txn OnCompletion
+int DeleteApplication
+==
+bnz handle_deleteapp
+
+// Unexpected OnCompletion value. Should be unreachable.
+err
+
+handle_noop:
+// Handle NoOp
+// Check for creator
+addr YUETKSGOZQSW6NFOYHCME6RCYSPWJD7KSGUAPIUEKFMY7SSVONUPKOFFE4
+txn Sender
+==
+bnz handle_optin
+
+// read global state and increment by 1
+byte "gcnt1"
+dup
+app_global_get
+int 1
++
+dup
+store 0
+app_global_put
+
+// read local state for sender and sum the argument to it
+int 0
+byte "lcnt"
+app_local_get
+txn ApplicationArgs 0
+btoi
++
+store 3
+
+// update lcnt
+int 0
+byte "lcnt"
+load 3
+app_local_put
+
+// load return value as approval
+load 0
+return
+
+handle_optin:
+// handle OptIn
+// approval
+int 1
+return
+
+handle_closeout:
+// Handle CloseOut
+//approval
+int 1
+return
+
+handle_deleteapp:
+// Check for creator
+addr YUETKSGOZQSW6NFOYHCME6RCYSPWJD7KSGUAPIUEKFMY7SSVONUPKOFFE4
+txn Sender
+==
+return
+
+handle_updateapp:
+// Check for creator
+txn Sender
+addr YUETKSGOZQSW6NFOYHCME6RCYSPWJD7KSGUAPIUEKFMY7SSVONUPKOFFE4
+==
+return
