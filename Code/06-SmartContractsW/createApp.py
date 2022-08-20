@@ -24,7 +24,7 @@ def main(creatorMnemFile,approvalFile,directory):
 
     # declare application state storage (immutable)
     # define global schema
-    global_ints=2
+    global_ints=5
     global_bytes=1
     globalSchema=StateSchema(global_ints,global_bytes)
 
