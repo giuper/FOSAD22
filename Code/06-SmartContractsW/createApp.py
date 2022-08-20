@@ -41,6 +41,7 @@ def main(creatorMnemFile,approvalFile,directory):
         approvalProgramSource=f.read()
     approvalProgramResponse=algodClient.compile(approvalProgramSource)
     approvalProgram=base64.b64decode(approvalProgramResponse['result'])
+    print("Hash: ",approvalProgramResponse['hash'])
 
     utxn=ApplicationCreateTxn(creatorAddr,params,on_complete, \
                                         approvalProgram,clearProgram, \

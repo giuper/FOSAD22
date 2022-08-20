@@ -136,6 +136,24 @@ of the ```account_info``` obtained from the node about the address that has call
 The global state can also be obtained from the script ```readGlobalValues.py``` that accesses 
     the ```account_info``` of the creator of the application.
 
+### Deleting the application ###
+
+The transaction that clears an application from an address balance is 
+```python
+    utxn=ApplicationDeleteTxn(Addr,params,index)
+```
+Python program [deleteApp.py](deleteApp.py) can be used to delete an application
+
+### Clearing a dApp ###
+
+The transaction that clears an application from an address balance is 
+```python
+    utxn=ApplicationClearStateTxn(Addr,params,index)
+```
+where ```Addr``` is the address calling the app, 
+```params``` are the transaction parameters
+and ```index``` is the id of the dApp.
+
 
 ### The TEAL approval file ###
 
@@ -199,10 +217,25 @@ return
 For all other operations, the TEAL program just approves the operation without
 performing any action.
     
+### Passing arguments to a dApp ###
 
-### Step by step (with arguments) ###
+Creation and opting in are the same.
+To pass an argument to the dApp, we pass an extra argument to the call to
+execute the dApp. The following fragment passes one argument, the python variable
+```incr``` after encoding it as a byte sequence.
 
-1.  We modify the teal program so that the local value is incremented by a user provided 
+```python
+    appArgs=[incr.to_bytes(8,'big')]
+    utxn=ApplicationNoOpTxn(Addr,params,index,appArgs)
+```
+[This](callIntArgApp.py) python program 
+takes four command line arguments: 
+the filename containing the mnemonic of the address that wishes to execute the application,
+the application index, the increment and the directory of the node.
+
+### Reading Arguments from TEAL ###
+
+We modify the teal program so that the local value is incremented by a user provided 
 integer (and not by 1 as before). [Here](02-class.teal) is the revised source and
 following is the relevant snippet of code.
 
@@ -217,15 +250,4 @@ btoi
 store 3
 ```
 
-2. Opting is the same as before.
 
-3. Run [callIntArgApp.py](callIntArgApp.py) to allow addresses to execute the application
-    and pass the parameter.
-
-    It takes four command line arguments: the filename containing the mnemonic of the address
-    that wishes to opt in, the application index, the increment and the directory of the node.
-    
-
-### Deleting the application ###
-
-1. Run [deleteApp.py](deleteApp.py) to delete the application

@@ -5,7 +5,7 @@ from algosdk.v2client import algod
 from algosdk.future.transaction import write_to_file, ApplicationNoOpTxn
 from utilities import wait_for_confirmation, getClient
 
-def main(MnemFile,index,directory)
+def main(MnemFile,index,directory):
 
     algodClient=getClient(directory)
     params=algodClient.suggested_params()
@@ -78,6 +78,6 @@ if __name__=='__main__':
     index=int(sys.argv[2])
     directory=sys.argv[3]
 
-    main(MnemFIle,index,directory)
+    main(MnemFile,index,directory)
     
     

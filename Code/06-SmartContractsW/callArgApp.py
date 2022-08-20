@@ -10,7 +10,7 @@ from algosdk.future.transaction import OnComplete
 from algosdk.future.transaction import StateSchema
 from utilities import wait_for_confirmation, getClient
 
-def main(MnemFile,index,directory):
+def main(MnemFile,index,incr,directory):
 
 
     algodClient=getClient(directory)
@@ -22,13 +22,10 @@ def main(MnemFile,index,directory):
     Addr=account.address_from_private_key(SK)
 
 
-    incr=1000
     appArgs=[incr.to_bytes(8,'big')]
     utxn=ApplicationNoOpTxn(Addr,params,index,appArgs)
-    write_to_file([utxn],"noop.utxn")
 
     stxn=utxn.sign(SK)
-    write_to_file([stxn],"noop.stxn")
 
     txId=stxn.transaction.get_txid()
     print("Transaction id: ",txId)
@@ -98,12 +95,13 @@ def main(MnemFile,index,directory):
 
 
 if __name__=='__main__':
-    if len(sys.argv)!=4:
-        print("usage: python3 "+sys.argv[0]+" <mnem> <app index> <node directory>")
+    if len(sys.argv)!=5:
+        print("usage: python3 "+sys.argv[0]+" <mnem> <app index> <incr> <node directory>")
         exit()
     MnemFile=sys.argv[1]
     index=int(sys.argv[2])
-    directory=sys.argv[3]
-    main(MnemFile,index,directory)
+    incr=int(sys.argv[3])
+    directory=sys.argv[4]
+    main(MnemFile,index,incr,directory)
     
     
