@@ -2,6 +2,7 @@ import sys
 import json
 import base64
 from algosdk import account, mnemonic
+import algosdk.encoding as e
 from algosdk.v2client import algod
 from algosdk.future.transaction import write_to_file
 from algosdk.future.transaction import ApplicationCreateTxn
@@ -41,7 +42,9 @@ def main(creatorMnemFile,approvalFile,directory):
         approvalProgramSource=f.read()
     approvalProgramResponse=algodClient.compile(approvalProgramSource)
     approvalProgram=base64.b64decode(approvalProgramResponse['result'])
-    print("Hash: ",approvalProgramResponse['hash'])
+    print("Hash:            ",approvalProgramResponse['hash'])
+
+    
 
     utxn=ApplicationCreateTxn(creatorAddr,params,on_complete, \
                                         approvalProgram,clearProgram, \
@@ -57,7 +60,9 @@ def main(creatorMnemFile,approvalFile,directory):
     wait_for_confirmation(algodClient,txId,4)
     txResponse=algodClient.pending_transaction_info(txId)
     appId=txResponse['application-index']
-    print("Created a new app with id: ",appId);
+    print("App id:          ",appId);
+    print("App address:     ",b'appId'+appId.to_bytes(8, 'big'))
+    print("App address:     ",e.encode_address(e.checksum(b'appID'+appId.to_bytes(8, 'big'))))
 
 if __name__=='__main__':
     if len(sys.argv)!=4:
