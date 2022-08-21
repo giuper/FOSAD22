@@ -15,6 +15,6 @@
 6. [dApp with approval program in TEAL](./06-dAppTEAL) 
 7. [dApp with approval program in PyTEAL](./07-dAppPyTEAL)
 8. [Smart Signatures in PyTEAL](./08-SmartSigPyTEAL)
-9. [Smart Signaturs in a group](./09-SmartSigInGroups)
+9. [Smart Signatures in a group](./09-SmartSigInGroups)
 
 
