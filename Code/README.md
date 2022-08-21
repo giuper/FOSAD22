@@ -14,5 +14,7 @@
 ### Distributed Applications ###
 6. [dApp with approval program in TEAL](./06-dAppTEAL) 
 7. [dApp with approval program in PyTEAL](./07-dAppPyTEAL)
-8. [Smart Signature in PyTEAL](./08-SmartSigPyTEAL)
+8. [Smart Signatures in PyTEAL](./08-SmartSigPyTEAL)
+9. [Smart Signaturs in a group](./09-SmartSigInGroups)
+
 
