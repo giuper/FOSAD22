@@ -16,6 +16,7 @@ def main():
     arg_str=sys.argv[3]
     directory=sys.argv[4]
     
+    print(arg_str)
     algodClient=getClient(directory)
     amount=230_000
     
@@ -40,6 +41,7 @@ def main():
     
     #arg_str="weather comfort erupt verb pet range endorse exhibit tree brush crane man"
 
+    arg_str="827154396965327148341689752593468271472513689618972435786235914154796823239841567"
     arg1=arg_str.encode()
     lsig=transaction.LogicSig(program, args=[arg1])
     with open(receiverADDRFile,'r') as f:
