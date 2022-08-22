@@ -61,7 +61,6 @@ def main(creatorMnemFile,approvalFile,directory):
     txResponse=algodClient.pending_transaction_info(txId)
     appId=txResponse['application-index']
     print("App id:          ",appId);
-    print("App address:     ",b'appId'+appId.to_bytes(8, 'big'))
     print("App address:     ",e.encode_address(e.checksum(b'appID'+appId.to_bytes(8, 'big'))))
 
 if __name__=='__main__':

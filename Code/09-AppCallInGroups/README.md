@@ -1,12 +1,12 @@
 # *Introduction to blockchain and smart contract design*
 ## FOSAD 22 ##
 
-## Smart Signatures in Atomic Groups ##
+## Application Calls in Atomic Groups ##
 
 Atomic groups consists of transactions that will either be all accepted
-or all rejected, independentely of how the transaction is signed.
+or all rejected, independentely of the nature of the transaction.
 In this unit we will use atomic groups of transactions in which 
-one of the transactions is signed with a logic signature.
+one of the transactions is an application call.
 
 Specifically, we consider the game of NIM of the previous unit in which
 the dealer imposes a fee of 1 Algo for each move. This is implemented

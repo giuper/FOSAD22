@@ -15,7 +15,7 @@
 6. [dApp with approval program in TEAL](./06-dAppTEAL) 
 7. [dApp with approval program in PyTEAL](./07-dAppPyTEAL)
 8. [Smart Signatures in PyTEAL](./08-SmartSigPyTEAL)
-9. [Smart Signatures in a group](./09-SmartSigInGroups)
+9. [Application calls in a group](./09-AppCallInGroups)
 10. [Inner transactions](./10-InnerTX)
 
 
