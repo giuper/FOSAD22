@@ -19,3 +19,5 @@
 10. [Inner transactions](./10-InnerTX)
 
 
+### A Simple DAO ###
+11. [DAO](./11-DAO)
