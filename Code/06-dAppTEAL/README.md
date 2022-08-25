@@ -60,7 +60,7 @@ Typically the ```approvalProgram``` is read from a file before being compiled as
     approvalProgram=base64.b64decode(approvalProgramResponse['result'])
 ```
 
-The ```globalScheme``` specifies the number of the integer and string gloabl
+The ```globalScheme``` specifies the number of integer and string global
 variables. In our case we have the following
 
 ```python
