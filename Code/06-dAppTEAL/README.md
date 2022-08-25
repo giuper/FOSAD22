@@ -6,7 +6,7 @@
 Smart contracts (or *distributed applications* or *dApps*), 
 unlike smart signatures, have a state that consists of
 *global* variables (i.e., all addresses see the same value) 
-and *local* (i.e., per address) variable.
+and *local* (i.e., per address) variables.
 
 In this unit we design and deploy 
 a simple dApp that exemplifies the use of global and local state.
