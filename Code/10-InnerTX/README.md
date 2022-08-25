@@ -3,7 +3,7 @@
 
 ## Inner transactions ##
 
-Furthering our NIM implementation on Algorand let us consider 
+Furthering our NIM implementation on Algorand, let us consider 
 one extra feature. Now that players pay for each move it seems only fair
 that they receive something in return.
 Let us then modify our NIM so that each player pays a fee to the
