@@ -11,7 +11,7 @@ from utilities import wait_for_confirmation, getClient
 import algosdk.encoding as e
 
 
-def setPrice(MnemFile,appIndex,assetId,price,directory):
+def proposePrice(MnemFile,appIndex,price,directory):
 
     algodClient=getClient(directory)
     params=algodClient.suggested_params()
@@ -20,6 +20,19 @@ def setPrice(MnemFile,appIndex,assetId,price,directory):
         Mnem=f.read()
     SK=mnemonic.to_private_key(Mnem)
     Addr=account.address_from_private_key(SK)
+
+    appAddr=e.encode_address(e.checksum(b'appID'+appIndex.to_bytes(8, 'big')))
+    accountInfo=algodClient.account_info(appAddr)
+    print("App id:   ",appIndex)
+    print("App addr: ",appAddr)
+    assetId=None
+    for asset in accountInfo['created-assets']:
+        if asset['params']['name']=="FosadDAO-VotingRight3":
+            assetId=asset['index']
+            break
+    if assetId==None:
+        print("Could not find asset")
+        exit()
 
     ctxn=ApplicationNoOpTxn(sender=Addr,sp=params,index=appIndex,app_args=["p".encode(),price.to_bytes(8,'big')],foreign_assets=[assetId])
     appAddr=e.encode_address(e.checksum(b'appID'+appIndex.to_bytes(8, 'big')))
@@ -43,15 +56,14 @@ def setPrice(MnemFile,appIndex,assetId,price,directory):
 
 
 if __name__=='__main__':
-    if len(sys.argv)!=6:
-        print("usage: python3 "+sys.argv[0]+" <mnem> <app index> <assetId> <price> <node directory>")
+    if len(sys.argv)!=5:
+        print("usage: python3 "+sys.argv[0]+" <mnem> <app index> <price> <node directory>")
         exit()
 
     MnemFile=sys.argv[1]
     appIndex=int(sys.argv[2])
-    assetId=int(sys.argv[3])
-    price=int(sys.argv[4])
-    directory=sys.argv[5]
-    setPrice(MnemFile,appIndex,assetId,price,directory)
+    price=int(sys.argv[3])
+    directory=sys.argv[4]
+    proposePrice(MnemFile,appIndex,price,directory)
     
 

@@ -1,14 +1,14 @@
 import sys
 from pyteal import *
+import algosdk.encoding as e
 
 t=ScratchVar(TealType.uint64)
 arg=ScratchVar(TealType.uint64)
 cmd=ScratchVar(TealType.bytes)
 pp=ScratchVar(TealType.uint64)
 
-def approval_program(Alice,Bob,Charlie):
-
-    handle_start=If(And(Global.group_size()==Int(2),
+def handle_start():
+    h_start=If(And(Global.group_size()==Int(2),
                         Gtxn[0].type_enum()==TxnType.Payment,
                         Gtxn[0].receiver()==Global.current_application_address(),
                         Gtxn[0].amount()>=Int(500_000),
@@ -46,31 +46,44 @@ def approval_program(Alice,Bob,Charlie):
                             App.globalPut(Bytes("votingTok"),InnerTxn.created_asset_id()),
                             Approve()
                         ])).Else(Reject())
- 
-    handle_price=Seq([
-                        If(And(Global.group_size()==Int(2),
-                            Gtxn[0].type_enum()==TxnType.AssetTransfer,
-                            Gtxn[0].asset_receiver()==Global.current_application_address(),
-                            Gtxn[0].asset_amount()>=Int(1),
-                            Gtxn[0].xfer_asset()==App.globalGet(Bytes("votingTok")),
-                            )).
-                    Then(
-                        Seq([
-                        pp.store(Btoi(Gtxn[1].application_args[1])),
-                        App.globalPut(Bytes("price"),pp.load()),
-                        InnerTxnBuilder.Begin(),
-                        InnerTxnBuilder.SetFields({
-                                TxnField.type_enum: TxnType.AssetTransfer,
-                                TxnField.asset_receiver: Txn.sender(),
-                                TxnField.asset_amount: Int(1),
-                                TxnField.xfer_asset: App.globalGet(Bytes("votingTok"))
-                        }),
-                        InnerTxnBuilder.Submit(),
-                        Approve()])).
-                    Else(Reject())
-                     ])
+    return h_start
+
+def handle_priceTok():
+    return Seq([
+        If(Or(
+           App.globalGet(Bytes("pprice"))==Int(0),
+           Btoi(Gtxn[1].application_args[1])!=App.globalGet(Bytes("pprice")),
+           Txn.sender()==App.globalGet(Bytes("proposer"))
+        )).
+        Then(Seq([App.globalPut(Bytes("pprice"),Btoi(Gtxn[1].application_args[1])),
+                  App.globalPut(Bytes("proposer"),Gtxn[1].sender())])).
+        Else(Seq([App.globalPut(Bytes("pprice"),Int(0)),
+                  App.globalPut(Bytes("price"),Btoi(Gtxn[1].application_args[1]))])),
+        InnerTxnBuilder.Begin(),
+        InnerTxnBuilder.SetFields({
+            TxnField.type_enum: TxnType.AssetTransfer,
+            TxnField.asset_receiver: Txn.sender(),
+            TxnField.asset_amount: Int(1),
+            TxnField.xfer_asset: App.globalGet(Bytes("votingTok"))
+        }),
+        InnerTxnBuilder.Submit(),
+        Approve()])
+
+def handle_price():
+    h_price=Seq([
+           If(And(Global.group_size()==Int(2),
+                  Gtxn[0].type_enum()==TxnType.AssetTransfer,
+                  Gtxn[0].asset_receiver()==Global.current_application_address(),
+                  Gtxn[0].asset_amount()>=Int(1),
+                  Gtxn[0].xfer_asset()==App.globalGet(Bytes("votingTok")),)
+           ).Then(handle_priceTok()).Else(Reject())])
+    return h_price
+
+def approval_program(Alice,Bob,Charlie):
 
     handle_creation=Seq([
+                    App.globalPut(Bytes("pprice"),Int(0)),
+                    App.globalPut(Bytes("proposer"),Alice),
                     App.globalPut(Bytes("price"),Int(1_000_000)),
                     App.globalPut(Bytes("votingTok"),Int(0)),
                     App.globalPut(Bytes("fsd"),Int(0)),
@@ -128,8 +141,8 @@ def approval_program(Alice,Bob,Charlie):
 
     handle_noop=Seq([
                 cmd.store(Txn.application_args[0]),
-                Cond([cmd.load()==Bytes("p"),handle_price],
-                     [cmd.load()==Bytes("s"),handle_start],
+                Cond([cmd.load()==Bytes("p"),handle_price()],
+                     [cmd.load()==Bytes("s"),handle_start()],
                 ),Approve()]
     )
 

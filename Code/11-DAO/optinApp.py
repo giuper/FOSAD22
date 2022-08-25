@@ -5,8 +5,9 @@ from algosdk.v2client import algod
 from algosdk.future.transaction import write_to_file
 from algosdk.future.transaction import ApplicationOptInTxn,AssetTransferTxn
 from utilities import wait_for_confirmation, getClient
+import algosdk.encoding as e
 
-def main(MnemFile,appId,assetId,directory):
+def optInDAO(MnemFile,appId,directory):
 
     algodClient=getClient(directory)
     params=algodClient.suggested_params()
@@ -16,7 +17,19 @@ def main(MnemFile,appId,assetId,directory):
     SK=mnemonic.to_private_key(Mnem)
     Addr=account.address_from_private_key(SK)
     print("User addr:       ",Addr)
-    print("Asset:           ",assetId)
+    appAddr=e.encode_address(e.checksum(b'appID'+appId.to_bytes(8, 'big')))
+    accountInfo=algodClient.account_info(appAddr)
+    print("App id:   ",appId)
+    print("App addr: ",appAddr)
+    assetId=None
+    for asset in accountInfo['created-assets']:
+        if asset['params']['name']=="FosadDAO-VotingRight3":
+            assetId=asset['index']
+            break
+    if assetId==None:
+        print("Could not find asset")
+        exit()
+    print("Asset id: ",assetId)
     txn=AssetTransferTxn(sender=Addr,
             sp=params,receiver=Addr,amt=0,index=assetId)
     stxn=txn.sign(SK)
@@ -38,15 +51,14 @@ def main(MnemFile,appId,assetId,directory):
 
 
 if __name__=='__main__':
-    if len(sys.argv)!=5:
-        print("usage: python3 "+sys.argv[0]+" <mnem> <app index> <assetId> <node directory>")
+    if len(sys.argv)!=4:
+        print("usage: python3 "+sys.argv[0]+" <mnem> <app index> <node directory>")
         exit()
 
     MnemFile=sys.argv[1]
     index=int(sys.argv[2])
-    assetId=int(sys.argv[3])
-    directory=sys.argv[4]
+    directory=sys.argv[3]
 
-    main(MnemFile,index,assetId,directory)
+    optInDAO(MnemFile,index,directory)
     
     
