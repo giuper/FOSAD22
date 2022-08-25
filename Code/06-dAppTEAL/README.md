@@ -136,6 +136,22 @@ of the ```account_info``` obtained from the node about the address that has call
 The global state can also be obtained from the script ```readGlobalValues.py``` that accesses 
     the ```account_info``` of the creator of the application.
 
+### Calling a dApp and passing arguments###
+
+It is possible to pass arguments to a dApp. 
+Arguments must be properly encoded as shown below. 
+The string variable ```stringVar``` is encoded by the ```encode``` method
+and the integer variables ```intVar``` is encoded by the `methos 
+```to_bytes```.
+How arguments are treated by the TEAL and PyTEAL program is discussed
+in the next unit.
+
+```python
+    appArgs=[stringVar.encode(),intVar.to_bytes(8,'big')]
+    utxn=ApplicationNoOpTxn(Addr,params,index,appArgs)
+```
+
+
 ### Deleting the application ###
 
 The transaction that clears an application from an address balance is 
