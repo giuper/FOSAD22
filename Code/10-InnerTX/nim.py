@@ -10,10 +10,14 @@ def approval_program(Alice,Bob,Dealer):
         App.globalPut(Bytes("heap"), Int(4)),
         App.globalPut(Bytes("max"), Int(3)),
         App.globalPut(Bytes("nofmoves"),Int(0)),
-        Return(Int(1))
+        Approve()
     ])
  
-    handle_optin=Return(Int(1))
+    handle_optin=If(And(Global.group_size()==Int(2),
+                        Gtxn[0].type_enum()==TxnType.Payment,
+                        Gtxn[0].receiver()==Global.current_application_address(),
+                        Gtxn[0].amount()>=Int(500_000),
+                    )).Then(Approve()).Else(Reject())
     handle_closeout=If(Txn.sender()==Dealer).Then(Return(Int(1))).Else(Return(Int(0)))
     handle_updateapp=If(Txn.sender()==Dealer).Then(Return(Int(1))).Else(Return(Int(0)))
     handle_deleteapp=If(Txn.sender()==Dealer).Then(Return(Int(1))).Else(Return(Int(0)))
@@ -43,7 +47,7 @@ def approval_program(Alice,Bob,Dealer):
                 InnerTxnBuilder.Begin(),
                 InnerTxnBuilder.SetFields({
                     TxnField.type_enum: TxnType.Payment,
-                    TxnField.amount: Int(5000),
+                    TxnField.amount: Int(899_000),
                     TxnField.receiver: Txn.sender()
                 }),
                 InnerTxnBuilder.Submit(),
