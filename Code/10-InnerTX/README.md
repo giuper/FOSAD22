@@ -43,15 +43,15 @@ Two questions arise:
     executed.
 
 ```
-            If(App.globalGet(Bytes("heap"))==Int(0)).Then(
-                Seq([
-                InnerTxnBuilder.Begin(),
-                InnerTxnBuilder.SetFields({
-                    TxnField.type_enum: TxnType.Payment,
-                    TxnField.amount: Int(899_000),
-                    TxnField.receiver: Txn.sender()
-                }),
-                InnerTxnBuilder.Submit(),
-                Approve()])
-            ).Else(Approve())
+    If(App.globalGet(Bytes("heap"))==Int(0)).Then(
+        Seq([
+             InnerTxnBuilder.Begin(),
+             InnerTxnBuilder.SetFields({
+                TxnField.type_enum: TxnType.Payment,
+                TxnField.amount: Int(899_000),
+                TxnField.receiver: Txn.sender()
+             }),
+             InnerTxnBuilder.Submit(),
+             Approve()])
+     ).Else(Approve())
 ```
