@@ -136,7 +136,7 @@ of the ```account_info``` obtained from the node about the address that has call
 The global state can also be obtained from the script ```readGlobalValues.py``` that accesses 
     the ```account_info``` of the creator of the application.
 
-### Calling a dApp and passing arguments###
+### Calling a dApp and passing arguments ###
 
 It is possible to pass arguments to a dApp. 
 Arguments must be properly encoded as shown below. 
