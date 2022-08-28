@@ -18,7 +18,7 @@ def main(MnemFile,index,directory):
     utxn=ApplicationClearStateTxn(Addr,params,index)
     stxn=utxn.sign(SK)
     txId=stxn.transaction.get_txid()
-    print("Transaction id:  ",txId)
+    print("Transaction id: ",txId)
 
     algodClient.send_transactions([stxn])
     wait_for_confirmation(algodClient,txId,4)
