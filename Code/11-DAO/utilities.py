@@ -1,4 +1,13 @@
+#import base64
 from algosdk.v2client import algod
+from algosdk import account, mnemonic
+
+def getSKAddr(MnemFile):
+    with open(MnemFile,'r') as f:
+        Mnem=f.read()
+    SK=mnemonic.to_private_key(Mnem)
+    Addr=account.address_from_private_key(SK)
+    return [SK,Addr]
 
 # utility function for waiting on a transaction confirmation
 def wait_for_confirmation(client,transaction_id,timeout):

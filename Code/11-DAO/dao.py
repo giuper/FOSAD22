@@ -28,7 +28,7 @@ def handle_start():
                                 TxnField.config_asset_clawback: Global.current_application_address()
                                 }),
                                 InnerTxnBuilder.Submit(),
-                                App.globalPut(Bytes("fsd"),InnerTxn.created_asset_id()),
+                                App.globalPut(Bytes("fsdName"),InnerTxn.created_asset_id()),
                             InnerTxnBuilder.Begin(),
                             InnerTxnBuilder.SetFields({
                                 TxnField.type_enum: TxnType.AssetConfig,
@@ -48,17 +48,17 @@ def handle_start():
                         ])).Else(Reject())
     return h_start
 
-def handle_priceTok():
+def handle_priceTok(prefix):
     return Seq([
         If(Or(
-           App.globalGet(Bytes("pprice"))==Int(0),
-           Btoi(Gtxn[1].application_args[1])!=App.globalGet(Bytes("pprice")),
-           Txn.sender()==App.globalGet(Bytes("proposer"))
+           App.globalGet(Bytes(prefix+"pprice"))==Int(0),
+           Btoi(Gtxn[1].application_args[1])!=App.globalGet(Bytes(prefix+"pprice")),
+           Txn.sender()==App.globalGet(Bytes(prefix+"proposer"))
         )).
-        Then(Seq([App.globalPut(Bytes("pprice"),Btoi(Gtxn[1].application_args[1])),
-                  App.globalPut(Bytes("proposer"),Gtxn[1].sender())])).
-        Else(Seq([App.globalPut(Bytes("pprice"),Int(0)),
-                  App.globalPut(Bytes("price"),Btoi(Gtxn[1].application_args[1]))])),
+        Then(Seq([App.globalPut(Bytes(prefix+"pprice"),Btoi(Gtxn[1].application_args[1])),
+                  App.globalPut(Bytes(prefix+"proposer"),Gtxn[1].sender())])).
+        Else(Seq([App.globalPut(Bytes(prefix+"pprice"),Int(0)),
+                  App.globalPut(Bytes(prefix+"currentPrice"),Btoi(Gtxn[1].application_args[1]))])),
         InnerTxnBuilder.Begin(),
         InnerTxnBuilder.SetFields({
             TxnField.type_enum: TxnType.AssetTransfer,
@@ -69,24 +69,27 @@ def handle_priceTok():
         InnerTxnBuilder.Submit(),
         Approve()])
 
-def handle_price():
+def handle_price(prefix):
     h_price=Seq([
            If(And(Global.group_size()==Int(2),
                   Gtxn[0].type_enum()==TxnType.AssetTransfer,
                   Gtxn[0].asset_receiver()==Global.current_application_address(),
                   Gtxn[0].asset_amount()>=Int(1),
                   Gtxn[0].xfer_asset()==App.globalGet(Bytes("votingTok")),)
-           ).Then(handle_priceTok()).Else(Reject())])
+           ).Then(handle_priceTok(prefix)).Else(Reject())])
     return h_price
 
 def approval_program(Alice,Bob,Charlie):
 
     handle_creation=Seq([
-                    App.globalPut(Bytes("pprice"),Int(0)),
-                    App.globalPut(Bytes("proposer"),Alice),
-                    App.globalPut(Bytes("price"),Int(1_000_000)),
+                    App.globalPut(Bytes("bpprice"),Int(0)),
+                    App.globalPut(Bytes("bproposer"),Alice),
+                    App.globalPut(Bytes("bcurrentPrice"),Int(900_000)),
+                    App.globalPut(Bytes("spprice"),Int(0)),
+                    App.globalPut(Bytes("sproposer"),Alice),
+                    App.globalPut(Bytes("scurrentPrice"),Int(1_000_000)),
                     App.globalPut(Bytes("votingTok"),Int(0)),
-                    App.globalPut(Bytes("fsd"),Int(0)),
+                    App.globalPut(Bytes("fsdName"),Int(0)),
                     Approve()])
 
     handle_optin=If(Or(Txn.sender()==Alice,
@@ -104,10 +107,7 @@ def approval_program(Alice,Bob,Charlie):
                             Approve()
                     ])).Else(Approve())
 
-    handle_closeout=If(Or(
-                Txn.sender()==Alice,
-                Txn.sender()==Bob,
-                Txn.sender()==Charlie)).Then(Approve()).Else(Reject())
+    handle_closeout=Approve()
 
     handle_updateapp=If(Or(Txn.sender()==Alice,
                            Txn.sender()==Bob,
@@ -120,13 +120,15 @@ def approval_program(Alice,Bob,Charlie):
                                 InnerTxnBuilder.Begin(),
                                     InnerTxnBuilder.SetFields({
                                         TxnField.type_enum: TxnType.AssetConfig,
-                                        TxnField.config_asset: Txn.assets[0]
+                                        #TxnField.config_asset: Txn.assets[0]
+                                        TxnField.config_asset: App.globalGet(Bytes("votingTok"))
                                     }),
                                 InnerTxnBuilder.Submit(),
                                 InnerTxnBuilder.Begin(),
                                     InnerTxnBuilder.SetFields({
                                         TxnField.type_enum: TxnType.AssetConfig,
-                                        TxnField.config_asset: Txn.assets[1]
+                                        #TxnField.config_asset: Txn.assets[1]
+                                        TxnField.config_asset: App.globalGet(Bytes("fsdName"))
                                     }),
                                 InnerTxnBuilder.Submit(),
                                 InnerTxnBuilder.Begin(),
@@ -139,9 +141,28 @@ def approval_program(Alice,Bob,Charlie):
                                 InnerTxnBuilder.Submit(),
                                 Approve()])).Else(Reject())
 
+    handle_buy=If(And(Global.group_size()==Int(2),
+                  Gtxn[0].type_enum()==TxnType.Payment,
+                  Gtxn[0].receiver()==Global.current_application_address(),
+                  Gtxn[0].amount()>=Btoi(Gtxn[1].application_args[1])*App.globalGet(Bytes("scurrentPrice")))
+            ).Then(Seq([
+                     InnerTxnBuilder.Begin(),
+                     InnerTxnBuilder.SetFields({
+                         TxnField.type_enum: TxnType.AssetTransfer,
+                         TxnField.asset_receiver: Txn.sender(),
+                         TxnField.asset_amount: Btoi(Gtxn[1].application_args[1]),
+                         TxnField.xfer_asset: App.globalGet(Bytes("fsdName"))
+                      }),
+                      InnerTxnBuilder.Submit(),
+                      Approve()
+            ])
+            ).Else(Reject())
+
     handle_noop=Seq([
                 cmd.store(Txn.application_args[0]),
-                Cond([cmd.load()==Bytes("p"),handle_price()],
+                Cond([cmd.load()==Bytes("sp"),handle_price("s")],
+                     [cmd.load()==Bytes("bp"),handle_price("b")],
+                     [cmd.load()==Bytes("b"),handle_buy],
                      [cmd.load()==Bytes("s"),handle_start()],
                 ),Approve()]
     )

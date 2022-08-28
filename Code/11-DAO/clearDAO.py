@@ -1,7 +1,7 @@
 import sys
-import json
+#import json
 import base64
-from algosdk import account, mnemonic
+#from algosdk import account, mnemonic
 from algosdk.v2client import algod
 from algosdk.future.transaction import ApplicationClearStateTxn, AssetCloseOutTxn
 from utilities import wait_for_confirmation, getClient, getSKAddr

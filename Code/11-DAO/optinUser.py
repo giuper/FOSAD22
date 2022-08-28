@@ -1,12 +1,9 @@
 import sys
 import base64
-#from algosdk import account, mnemonic
-from algosdk.v2client import algod
-from algosdk.future.transaction import write_to_file
-from algosdk.future.transaction import ApplicationOptInTxn,AssetTransferTxn
+from algosdk.future.transaction import ApplicationOptInTxn, AssetTransferTxn, calculate_group_id
 from utilities import wait_for_confirmation, getClient, getSKAddr
 import algosdk.encoding as e
-from daoutilities import getAssetIdFromName
+from daoutilities import getAssetIdFromName, DAOtokenName
 
 def optInDAO(MnemFile,appId,directory):
 
@@ -21,31 +18,25 @@ def optInDAO(MnemFile,appId,directory):
     print("App id:          ",appId)
     print("App addr:        ",appAddr)
 
-    assetName="FosadDAO3"
-    assetId=getAssetIdFromName(appAddr,assetName,algodClient)
+    assetId=getAssetIdFromName(appAddr,DAOtokenName,algodClient)
     if assetId is None:
-        print("Could not find asset",assetName)
+        print("Could not find asset",DAOtokenName)
         exit()
-    print("Asset name:      ",assetName)
+    print("Asset name:      ",DAOtokenName)
     print("Asset id:        ",assetId)
 
-    txn=AssetTransferTxn(sender=Addr,
-            sp=params,receiver=Addr,amt=0,index=assetId)
-    stxn=txn.sign(SK)
-    txId=stxn.transaction.get_txid()
-    algodClient.send_transaction(stxn)
-    print("Transaction id:  ",txId)
-    wait_for_confirmation(algodClient,txId,4)
-    print("Done opt-in:     ",assetName)
+    txn1=AssetTransferTxn(sender=Addr,sp=params,receiver=Addr,amt=0,index=assetId)
+    txn2=ApplicationOptInTxn(sender=Addr,sp=params,index=appId,foreign_assets=[assetId])
+    gid=calculate_group_id([txn1,txn2])
+    txn1.group=gid
+    txn2.group=gid
 
-    utxn=ApplicationOptInTxn(sender=Addr,sp=params,index=appId,foreign_assets=[assetId])
-    stxn=utxn.sign(SK)
-    txId=stxn.transaction.get_txid()
+    stxn1=txn1.sign(SK)
+    stxn2=txn2.sign(SK)
+
+    txId=algodClient.send_transactions([stxn1,stxn2])
     print("Transaction id:  ",txId)
-    algodClient.send_transaction(stxn)
     wait_for_confirmation(algodClient,txId,4)
-    txResponse=algodClient.pending_transaction_info(txId)
-    print("Opt in App id:   ",appId)
 
 
 if __name__=='__main__':
