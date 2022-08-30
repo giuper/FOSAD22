@@ -2,4 +2,4 @@
 ## FOSAD 22 ##
 
 
-*Slides and code*
+*[Slides](./Slides) and [code](./Code)*
