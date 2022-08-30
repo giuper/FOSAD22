@@ -12,7 +12,7 @@ def startApp(mnemFile,index,directory):
     params=algodClient.suggested_params()
 
     SK,Addr=getSKAddr(mnemFile)
-    print("CUser address:    ",Addr)
+    print("User address:    ",Addr)
 
     #transfer to fund the application
     appAddr=e.encode_address(e.checksum(b'appID'+index.to_bytes(8, 'big')))

@@ -1,11 +1,8 @@
 import sys
 from pyteal import *
-import algosdk.encoding as e
+from daoutilities import DAOtokenName, DAOGovName
 
-t=ScratchVar(TealType.uint64)
-arg=ScratchVar(TealType.uint64)
 cmd=ScratchVar(TealType.bytes)
-pp=ScratchVar(TealType.uint64)
 
 def handle_start():
     h_start=If(And(Global.group_size()==Int(2),
@@ -19,31 +16,31 @@ def handle_start():
                                 TxnField.type_enum: TxnType.AssetConfig,
                                 TxnField.config_asset_total: Int(1_000_000),
                                 TxnField.config_asset_decimals: Int(3),
+                                TxnField.config_asset_name: Bytes(DAOtokenName),
                                 TxnField.config_asset_unit_name: Bytes("fsd3"),
-                                TxnField.config_asset_name: Bytes("FosadDAO3"),
-                                TxnField.config_asset_url: Bytes("https://fosad22.io"),
+                                TxnField.config_asset_url: Bytes("https://sites.google.com/uniurb.it/fosad/home/fosad-2022"),
                                 TxnField.config_asset_manager: Global.current_application_address(),
                                 TxnField.config_asset_reserve: Global.current_application_address(),
                                 TxnField.config_asset_freeze: Global.current_application_address(),
                                 TxnField.config_asset_clawback: Global.current_application_address()
                                 }),
                                 InnerTxnBuilder.Submit(),
-                                App.globalPut(Bytes("fsdName"),InnerTxn.created_asset_id()),
+                                App.globalPut(Bytes("assetIDToken"),InnerTxn.created_asset_id()),
                             InnerTxnBuilder.Begin(),
                             InnerTxnBuilder.SetFields({
                                 TxnField.type_enum: TxnType.AssetConfig,
                                 TxnField.config_asset_total: Int(3),
                                 TxnField.config_asset_decimals: Int(0),
                                 TxnField.config_asset_unit_name: Bytes("vr3"),
-                                TxnField.config_asset_name: Bytes("FosadDAO-VotingRight3"),
-                                TxnField.config_asset_url: Bytes("https://fosad22.io"),
+                                TxnField.config_asset_name: Bytes(DAOGovName),
+                                TxnField.config_asset_url: Bytes("https://sites.google.com/uniurb.it/fosad/home/fosad-2022"),
                                 TxnField.config_asset_manager: Global.current_application_address(),
                                 TxnField.config_asset_reserve: Global.current_application_address(),
                                 TxnField.config_asset_freeze: Global.current_application_address(),
                                 TxnField.config_asset_clawback: Global.current_application_address()
                             }),
                             InnerTxnBuilder.Submit(),
-                            App.globalPut(Bytes("votingTok"),InnerTxn.created_asset_id()),
+                            App.globalPut(Bytes("assetIDGov"),InnerTxn.created_asset_id()),
                             Approve()
                         ])).Else(Reject())
     return h_start
@@ -64,7 +61,7 @@ def handle_priceTok(prefix):
             TxnField.type_enum: TxnType.AssetTransfer,
             TxnField.asset_receiver: Txn.sender(),
             TxnField.asset_amount: Int(1),
-            TxnField.xfer_asset: App.globalGet(Bytes("votingTok"))
+            TxnField.xfer_asset: App.globalGet(Bytes("assetIDGov"))
         }),
         InnerTxnBuilder.Submit(),
         Approve()])
@@ -75,7 +72,7 @@ def handle_price(prefix):
                   Gtxn[0].type_enum()==TxnType.AssetTransfer,
                   Gtxn[0].asset_receiver()==Global.current_application_address(),
                   Gtxn[0].asset_amount()>=Int(1),
-                  Gtxn[0].xfer_asset()==App.globalGet(Bytes("votingTok")),)
+                  Gtxn[0].xfer_asset()==App.globalGet(Bytes("assetIDGov")),)
            ).Then(handle_priceTok(prefix)).Else(Reject())])
     return h_price
 
@@ -88,8 +85,8 @@ def approval_program(Alice,Bob,Charlie):
                     App.globalPut(Bytes("spprice"),Int(0)),
                     App.globalPut(Bytes("sproposer"),Alice),
                     App.globalPut(Bytes("scurrentPrice"),Int(1_000_000)),
-                    App.globalPut(Bytes("votingTok"),Int(0)),
-                    App.globalPut(Bytes("fsdName"),Int(0)),
+                    App.globalPut(Bytes("assetIDGov"),Int(0)),
+                    App.globalPut(Bytes("assetIDToken"),Int(0)),
                     Approve()])
 
     handle_optin=If(Or(Txn.sender()==Alice,
@@ -101,7 +98,7 @@ def approval_program(Alice,Bob,Charlie):
                                 TxnField.type_enum: TxnType.AssetTransfer,
                                 TxnField.asset_receiver: Txn.sender(),
                                 TxnField.asset_amount: Int(1),
-                                TxnField.xfer_asset: App.globalGet(Bytes("votingTok"))
+                                TxnField.xfer_asset: App.globalGet(Bytes("assetIDGov"))
                             }),
                             InnerTxnBuilder.Submit(),
                             Approve()
@@ -120,15 +117,13 @@ def approval_program(Alice,Bob,Charlie):
                                 InnerTxnBuilder.Begin(),
                                     InnerTxnBuilder.SetFields({
                                         TxnField.type_enum: TxnType.AssetConfig,
-                                        #TxnField.config_asset: Txn.assets[0]
-                                        TxnField.config_asset: App.globalGet(Bytes("votingTok"))
+                                        TxnField.config_asset: App.globalGet(Bytes("assetIDGov"))
                                     }),
                                 InnerTxnBuilder.Submit(),
                                 InnerTxnBuilder.Begin(),
                                     InnerTxnBuilder.SetFields({
                                         TxnField.type_enum: TxnType.AssetConfig,
-                                        #TxnField.config_asset: Txn.assets[1]
-                                        TxnField.config_asset: App.globalGet(Bytes("fsdName"))
+                                        TxnField.config_asset: App.globalGet(Bytes("assetIDToken"))
                                     }),
                                 InnerTxnBuilder.Submit(),
                                 InnerTxnBuilder.Begin(),
@@ -151,7 +146,7 @@ def approval_program(Alice,Bob,Charlie):
                          TxnField.type_enum: TxnType.AssetTransfer,
                          TxnField.asset_receiver: Txn.sender(),
                          TxnField.asset_amount: Btoi(Gtxn[1].application_args[1]),
-                         TxnField.xfer_asset: App.globalGet(Bytes("fsdName"))
+                         TxnField.xfer_asset: App.globalGet(Bytes("assetIDToken"))
                       }),
                       InnerTxnBuilder.Submit(),
                       Approve()

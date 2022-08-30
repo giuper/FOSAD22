@@ -1,8 +1,8 @@
 import base64
 from algosdk import account
 
-DAOtokenName="FosadDAO3"
-DAOGovName="FosadDAO-VotingRight3"
+DAOtokenName="FOSAD22Token"
+DAOGovName="FOSAD22-Gov"
 
 #return list of all assets
 def getAllAssets(Addr,algodClient):
