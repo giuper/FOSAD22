@@ -27,7 +27,11 @@ creates, signs and submits a transaction from a multi signature address. The int
 ### Step by step ### 
 the script above assume that all signing keys are available to the script. This is not will happen in practice. Rather, the following process is executed
 
-    1. The multi signature address is created by executing [createMultiAddr.py](./createMultiAddr.py)
-    2. The unsigned transaction is created by executing [signMultiPayTX.py](./signMultiPayTX.py). That is, the first party to sign takes the unsigned transaction and adds its signature producing a transaction with one signature. Then the second party adds its signature to the transaction produced by the first party. This until we have the sufficient number of signatures (in the example, 2 signatures are sufficient).
-    3. The fully-signed transaction is submitted to the blockchain.
+1. The multi signature address is created by executing [createMultiAddr.py](./createMultiAddr.py)
+
+2. The unsigned transaction is created by executing [signMultiPayTX.py](./signMultiPayTX.py). 
+    That is, the first party to sign takes the unsigned transaction and adds its signature producing a 
+    transaction with one signature. Then the second party adds its signature to the transaction produced by the first party.         This until we have the sufficient number of signatures (in the example, 2 signatures are sufficient).
+
+3. The fully-signed transaction is submitted to the blockchain.
     
