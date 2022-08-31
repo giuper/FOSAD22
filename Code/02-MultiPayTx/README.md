@@ -25,7 +25,7 @@ creates, signs and submits a transaction from a multi signature address. The int
 3. the whole process is executed by [example02.sh](./example02.sh)
 
 ### Step by step ### 
-the script above assume that all signing keys are available to the script. This is not will happen in practice. Rather, the following process is executed
+The scripts above assume that all signing keys are available to the script. This is not will happen in practice. Rather, the following process is executed
 
 1. The multi signature address is created by executing [createMultiAddr.py](./createMultiAddr.py)
 
