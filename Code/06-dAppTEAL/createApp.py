@@ -8,17 +8,15 @@ from algosdk.future.transaction import write_to_file
 from algosdk.future.transaction import ApplicationCreateTxn
 from algosdk.future.transaction import OnComplete
 from algosdk.future.transaction import StateSchema
-from utilities import wait_for_confirmation, getClient
+from utilities import wait_for_confirmation, getClient, getSKAddr
 
 def main(creatorMnemFile,approvalFile,directory):
 
     algodClient=getClient(directory)
     params=algodClient.suggested_params()
 
-    with open(creatorMnemFile,'r') as f:
-        creatorMnem=f.read()
-    creatorSK=mnemonic.to_private_key(creatorMnem)
-    creatorAddr=account.address_from_private_key(creatorSK)
+
+    creatorSK,creatorAddr=getSKAddr(creatorMnemFile):
     print("Creator address: ",creatorAddr)
 
     on_complete=OnComplete.NoOpOC.real

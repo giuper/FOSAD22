@@ -1,7 +1,7 @@
 import sys
 import base64
-from algosdk import account, mnemonic
-from algosdk.v2client import algod
+#from algosdk import account, mnemonic
+#from algosdk.v2client import algod
 from algosdk.future.transaction import write_to_file, ApplicationNoOpTxn
 from utilities import wait_for_confirmation, getClient, getSKAddr
 

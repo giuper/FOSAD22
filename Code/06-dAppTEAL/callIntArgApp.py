@@ -10,17 +10,16 @@ def main(MnemFile,index,incr,directory):
     algodClient=getClient(directory)
     params=algodClient.suggested_params()
 
-    f=open(MnemFile,'r')
-    Mnem=f.read()
-    SK=mnemonic.to_private_key(Mnem)
-    Addr=account.address_from_private_key(SK)
-    f.close()
+    SK,Addr=getSKAddr(MnemFile):
 
     appArgs=[incr.to_bytes(8,'big')]
+
     utxn=ApplicationNoOpTxn(Addr,params,index,appArgs)
     write_to_file([utxn],"noop.utxn")
+
     stxn=utxn.sign(SK)
     write_to_file([stxn],"noop.stxn")
+
     txId=stxn.transaction.get_txid()
     print("Transaction id: ",txId)
     algodClient.send_transactions([stxn])
