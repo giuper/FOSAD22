@@ -24,7 +24,7 @@
         mnemonic=mnemonic.from_private_key(privateKey)
     ```
 
-2. Script [payTX.py](payTx.py) creates a payment transaction.
+2. Script [payTX.py](payTX.py) creates a payment transaction.
     It takes the (name of the file containing) the mnemonic of the sender,
     the (name of the file containing) the address of the receiver, and
     the directory containing the information of the node to which the
