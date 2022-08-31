@@ -1,4 +1,3 @@
-#import base64
 from algosdk.v2client import algod
 from algosdk import account, mnemonic
 

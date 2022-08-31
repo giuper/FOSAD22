@@ -3,17 +3,14 @@ import base64
 from algosdk import account, mnemonic
 from algosdk.v2client import algod
 from algosdk.future.transaction import write_to_file, ApplicationNoOpTxn
-from utilities import wait_for_confirmation, getClient
+from utilities import wait_for_confirmation, getClient, getSKAddr
 
 def main(MnemFile,index,directory):
 
     algodClient=getClient(directory)
     params=algodClient.suggested_params()
 
-    with open(MnemFile,'r') as f:
-        Mnem=f.read()
-    SK=mnemonic.to_private_key(Mnem)
-    Addr=account.address_from_private_key(SK)
+    SK,Addr=getSKAddr(MnemFile):
 
 
     utxn=ApplicationNoOpTxn(Addr,params,index)
@@ -21,6 +18,7 @@ def main(MnemFile,index,directory):
 
     stxn=utxn.sign(SK)
     write_to_file([stxn],"noop.stxn")
+
     txId=stxn.transaction.get_txid()
     print("Transaction id: ",txId)
     algodClient.send_transactions([stxn])
