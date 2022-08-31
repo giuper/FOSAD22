@@ -10,7 +10,7 @@ def main(MnemFile,index,incr,directory):
     algodClient=getClient(directory)
     params=algodClient.suggested_params()
 
-    SK,Addr=getSKAddr(MnemFile):
+    SK,Addr=getSKAddr(MnemFile)
 
     appArgs=[incr.to_bytes(8,'big')]
 
