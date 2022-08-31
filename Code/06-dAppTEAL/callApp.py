@@ -12,7 +12,6 @@ def main(MnemFile,index,directory):
 
     SK,Addr=getSKAddr(MnemFile)
 
-
     utxn=ApplicationNoOpTxn(Addr,params,index)
     write_to_file([utxn],"noop.utxn")
 
