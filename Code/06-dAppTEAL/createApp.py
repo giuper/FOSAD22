@@ -16,7 +16,7 @@ def main(creatorMnemFile,approvalFile,directory):
     params=algodClient.suggested_params()
 
 
-    creatorSK,creatorAddr=getSKAddr(creatorMnemFile):
+    creatorSK,creatorAddr=getSKAddr(creatorMnemFile)
     print("Creator address: ",creatorAddr)
 
     on_complete=OnComplete.NoOpOC.real
