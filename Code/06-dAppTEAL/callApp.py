@@ -10,7 +10,7 @@ def main(MnemFile,index,directory):
     algodClient=getClient(directory)
     params=algodClient.suggested_params()
 
-    SK,Addr=getSKAddr(MnemFile):
+    SK,Addr=getSKAddr(MnemFile)
 
 
     utxn=ApplicationNoOpTxn(Addr,params,index)
