@@ -75,7 +75,7 @@ The DAO then issues another transaction to return the token to the same address 
 The application call must come together with a payment transaction.
 We first check that the payment is sufficient given the number of tokens requested
 (as specified by the second argument of the second transaction of the group) and if the
-check is succefull the desired amount is transferred by the inner transaction.
+check is succeful the desired amount is transferred by the inner transaction.
 
 ```python
     handle_buy=If(And(Global.group_size()==Int(2),
