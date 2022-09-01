@@ -73,7 +73,7 @@ The DAO then issues another transaction to return the token to the same address 
 
 6. Program [buy.py](buy.py) can be used to buy some tokens at the current selling price.
 The application call must come together with a payment transaction.
-We first check that the payment is sufficinet given the number of tokens requested
+We first check that the payment is sufficient given the number of tokens requested
 (as specified by the second argument of the second transaction of the group) and if the
 check is succefull the desired amount is transferred by the inner transaction.
 
