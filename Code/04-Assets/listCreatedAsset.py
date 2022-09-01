@@ -1,7 +1,5 @@
 import sys
-from algosdk.v2client import algod
-from algosdk import account, mnemonic
-from algosdk.future import transaction 
+from algosdk import account
 from utilities import getClient
 
 def listAssets(directory,creatorADDRFile):
@@ -24,10 +22,10 @@ def listAssets(directory,creatorADDRFile):
 
 if __name__=="__main__":
     if (len(sys.argv)!=3):
-        print("Usage: python3 "+sys.argv[0]+" <NodeDir> <creator ADDR file>")
+        print("Usage: python",sys.argv[0],"<creator ADDR file> <NodeDir> ")
         exit()
 
-    directory=sys.argv[1]
-    creatorADDRFile=sys.argv[2]
+    creatorADDRFile=sys.argv[1]
+    directory=sys.argv[2]
     listAssets(directory,creatorADDRFile)
 

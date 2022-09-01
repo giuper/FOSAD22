@@ -3,7 +3,7 @@ from algosdk.v2client import algod
 from algosdk import account, mnemonic
 from algosdk.future import transaction 
 from algosdk.future.transaction import AssetConfigTxn
-from utilities import wait_for_confirmation, getClient
+from utilities import wait_for_confirmation, getClient, getSKAddr
 AssetName="FOSAD22"
 
 def createAsset(directory,AssetName,creatorMNEMFile,managerADDRFile):
@@ -11,10 +11,7 @@ def createAsset(directory,AssetName,creatorMNEMFile,managerADDRFile):
     algodClient=getClient(directory)
     params=algodClient.suggested_params()
     
-    with open(creatorMNEMFile,'r') as f:
-        creatorMnemo=f.read()
-    creatorSK=mnemonic.to_private_key(creatorMnemo)
-    creatorAddr=mnemonic.to_public_key(creatorMnemo)
+    creatorSK,creatorAddr=getSKAddr(creatorMNEMFile)
     
     with open(managerADDRFile,'r') as f:
         managerAddr=f.read()
@@ -68,12 +65,12 @@ def createAsset(directory,AssetName,creatorMNEMFile,managerADDRFile):
 
 if __name__=="__main__":
     if (len(sys.argv)!=4):
-        print("Usage: python3",sys.argv[0]," <NodeDir> <creator MNEM file> <manager ADDR>")
+        print("Usage: python3",sys.argv[0],"<creator MNEM file> <manager ADDR> <node dir>")
         exit()
 
-    directory=sys.argv[1]
-    creatorMNEMFile=sys.argv[2]
-    managerADDRFile=sys.argv[3]
+    creatorMNEMFile=sys.argv[1]
+    managerADDRFile=sys.argv[2]
+    directory=sys.argv[3]
 
     createAsset(directory,AssetName,creatorMNEMFile,managerADDRFile)
 

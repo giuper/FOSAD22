@@ -1,19 +1,16 @@
 import sys
-from algosdk.v2client import algod
-from algosdk import account, mnemonic
-from algosdk.future import transaction 
-from algosdk.future.transaction import AssetTransferTxn
-from utilities import wait_for_confirmation, getClient
+#from algosdk.v2client import algod
+#from algosdk import account, mnemonic
+#from algosdk.future import transaction 
+from algosdk.future.transaction import AssetTransferTxn, write_to_file
+from utilities import wait_for_confirmation, getClient, getSKAddr
 
 def optin(directory,holderMNEMFile,assetID):
 
     algodClient=getClient(directory)
     params=algodClient.suggested_params()
     
-    with open(holderMNEMFile,'r') as f:
-        holderMnemo=f.read()
-    holderSK=mnemonic.to_private_key(holderMnemo)
-    holderAddr=mnemonic.to_public_key(holderMnemo)
+    holderSK,holderAddr=getSKAddr(holderMNEMFile)
 
     #check if account has already opted in
     accountInfo=algodClient.account_info(holderAddr)
@@ -28,10 +25,10 @@ def optin(directory,holderMNEMFile,assetID):
 
     txn=AssetTransferTxn(sender=holderAddr,
             sp=params,receiver=holderAddr,amt=0,index=assetID)
-    transaction.write_to_file([txn],"assetOPTin.utxn")
+    write_to_file([txn],"assetOPTin.utxn")
 
     stxn=txn.sign(holderSK)
-    transaction.write_to_file([stxn],"assetOPTin.stxn")
+    write_to_file([stxn],"assetOPTin.stxn")
 
     txid=algodClient.send_transaction(stxn)
     print("TX Id: ",txid)
@@ -40,12 +37,12 @@ def optin(directory,holderMNEMFile,assetID):
 
 if __name__=="__main__":
     if (len(sys.argv)!=4):
-        print("Usage: python3 "+sys.argv[0]+" <NodeDir> <holder MNEM file> <assetID>")
+        print("Usage: python",sys.argv[0],"<holder MNEM file> <assetID> <NodeDir>")
         exit()
 
-    directory=sys.argv[1]
-    holderMNEMFile=sys.argv[2]
-    assetID=int(sys.argv[3])
+    holderMNEMFile=sys.argv[1]
+    assetID=int(sys.argv[2])
+    directory=sys.argv[3]
     
     optin(directory,holderMNEMFile,assetID)
 
