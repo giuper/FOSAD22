@@ -58,10 +58,14 @@ def makePayment(senderKeyF,receiverAddrF,directory):
     payTX(sKey,sAddr,rAddr,amount,algodClient)
 
 if __name__=='__main__':
-    if len(sys.argv)!=4:
-        print("usage: python",sys.argv[0],"<file with sender mnem> <file with receiver addr> <node directory>")
+    if len(sys.argv)<3:
+        print("usage: python",sys.argv[0],"<file with sender mnem> <file with receiver addr>")
         exit()
     senderKeyF=sys.argv[1]
     receiverAddrF=sys.argv[2]
-    directory=sys.argv[3]
+    if len(sys.argv)==4:
+        directory=sys.argv[3]
+    else:
+        directory=""
+        
     makePayment(senderKeyF,receiverAddrF,directory)

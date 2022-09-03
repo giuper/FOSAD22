@@ -1,5 +1,6 @@
 from algosdk.v2client import algod
 from algosdk import account, mnemonic
+import os
 
 def getSKAddr(MnemFile):
     with open(MnemFile,'r') as f:
@@ -39,11 +40,11 @@ def wait_for_confirmation(client,transaction_id,timeout):
         'pending tx not found in timeout rounds, timeout value = : {}'.format(timeout))
 
 def getClient(directory):
-    f=open(directory+"/algod.token",'r')
-    algodToken=f.read()
-    f.close()
-    f=open(directory+"/algod.net",'r')
-    algodAddress="http://"+f.read()[:-1]   #to remove the trailing newline
-    f.close()
+    if directory=="":
+        directory=os.environ['AlgoNodeDir']
+    with open(directory+"/algod.token",'r') as f:
+        algodToken=f.read()
+    with open(directory+"/algod.net",'r') as f:
+        algodAddress="http://"+f.read()[:-1]   #to remove the trailing newline
     return algod.AlgodClient(algodToken,algodAddress)
 

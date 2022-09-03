@@ -10,7 +10,7 @@ from utilities import *
 
 def main():
     if len(sys.argv)!=3:
-        print("usage: python3 "+sys.argv[0]+" <Signed TX> <node directory>")
+        print("usage: python "+sys.argv[0]+" <Signed TX> <node directory>")
         exit()
 
     signedTXFile=sys.argv[1]

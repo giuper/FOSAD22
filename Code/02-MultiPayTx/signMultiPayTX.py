@@ -6,7 +6,7 @@ import base64
 
 def main():
     if len(sys.argv)!=4:
-        print("usage: python3 "+sys.argv[0]+" <Key> <TXin> <TXout>")
+        print("usage: python "+sys.argv[0]+" <Key> <TXin> <TXout>")
         exit()
 
     keyFileName=sys.argv[1]

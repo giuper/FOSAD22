@@ -43,13 +43,13 @@ def multiPayTX(mnems,mSig,rAddr,amount,algodClient):
         return
 
     print("Transaction information: {}".format(
-        json.dumps(confirmed_txn, indent=4)))
+        json.dumps(confirmed_txn, indent=2)))
     decodedNote=base64.b64decode(confirmed_txn["txn"]["txn"]["note"]).decode()
     print(f'{"Decoded note:":17s}{decodedNote:s}')
 
 def main():
-    if len(sys.argv)!=8:
-        print("usage: python3 "+sys.argv[0]+" <Addr1> <Addr2> <Addr3> <Mnem1> <Mnem2> <Receiver Addr> <node directory>")
+    if len(sys.argv)<7:
+        print("usage: python",sys.argv[0],"<Addr1> <Addr2> <Addr3> <Mnem1> <Mnem2> <Receiver Addr>")
         exit()
 
     amount=1_000_000
@@ -73,17 +73,20 @@ def main():
     with open(sys.argv[6],'r') as f:
         receiver=f.read()
     
-    directory=sys.argv[7]
+    if len(sys.argv)==8:
+        directory=sys.argv[7]
+    else:
+        directory=""
     algodClient=getClient(directory)
     account_info=algodClient.account_info(mSig.address())
     balance=account_info.get('amount')
-    print(f'{"Account balance:":31s}{balance:d}{" microAlgos"}')
+    print(f'{"Account balance:":31s}{balance:9d}{" microAlgos"}')
 
     multiPayTX(mnems,mSig,receiver,amount,algodClient)
 
     account_info=algodClient.account_info(mSig.address())
     balance=account_info.get('amount')
-    print(f'{"Account balance:":17s}{balance:d}{" microAlgos"}')
+    print(f'{"Account balance:":17s}{balance:9d}{" microAlgos"}')
 
 if __name__=='__main__':
     main()
