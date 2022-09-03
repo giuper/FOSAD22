@@ -7,8 +7,8 @@ from utilities import *
 
 
 def main():
-    if len(sys.argv)!=6:
-        print("usage: python3 "+sys.argv[0]+" <Addr1> <Addr2> <Addr3> <AddrRec> <node directory>")
+    if len(sys.argv)<5:
+        print("usage: python "+sys.argv[0]+" <Addr1> <Addr2> <Addr3> <AddrRec> [<node directory>]")
         exit()
 
     amount=1_000_000
@@ -17,7 +17,10 @@ def main():
     txFileName="TX/MultiPayWithPK.utx"
 
     receiverFile=sys.argv[4]
-    directory=sys.argv[5]
+    if len(sys.argv)==6:
+        directory=sys.argv[5]
+    else:
+        directory=""
     algodClient=getClient(directory)
     
     accounts=[]

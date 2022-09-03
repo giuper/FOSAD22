@@ -9,12 +9,15 @@ from utilities import *
 
 
 def main():
-    if len(sys.argv)!=3:
-        print("usage: python "+sys.argv[0]+" <Signed TX> <node directory>")
+    if len(sys.argv)<2:
+        print("usage: python "+sys.argv[0]+" <Signed TX> [<node directory>]")
         exit()
 
     signedTXFile=sys.argv[1]
-    directory=sys.argv[2]
+    if len(sys.argv)==3:
+        directory=sys.argv[2]
+    else:
+        directory=""
     algodClient=getClient(directory)
 
     txInL=retrieve_from_file(signedTXFile)
@@ -29,7 +32,7 @@ def main():
             return
 
         print("Transaction information: {}".format(
-            json.dumps(confirmed_txn, indent=4)))
+            json.dumps(confirmed_txn, indent=2)))
         print("Decoded note: {}".format(base64.b64decode(
             confirmed_txn["txn"]["txn"]["note"]).decode()))
 
