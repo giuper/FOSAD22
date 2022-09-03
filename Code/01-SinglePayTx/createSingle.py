@@ -22,5 +22,3 @@ print(f'{"File with mnem:":20s}{mnemFile}')
 print(f'{"Account passphrase:":20s}{mnemonic}')
 print("Please go to: https://bank.testnet.algorand.network/ to fund account.")
 
-
-
