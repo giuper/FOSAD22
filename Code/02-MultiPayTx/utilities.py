@@ -39,7 +39,12 @@ def wait_for_confirmation(client,transaction_id,timeout):
     raise Exception(
         'pending tx not found in timeout rounds, timeout value = : {}'.format(timeout))
 
-def getClient(directory):
+def getClient():
+    algodToken=""
+    algodAddress="http://algoindexer.algoexplorerapi.io"
+    return algod.AlgodClient(algodToken,algodAddress)
+
+def getClientObs(directory):
     if directory=="":
         directory=os.environ['AlgoNodeDir']
     with open(directory+"/algod.token",'r') as f:
